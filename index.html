@@ -1,0 +1,452 @@
+import React, { useState, useEffect } from 'react';
+import { Calendar, TrendingUp, AlertTriangle, Lightbulb, ChevronRight, ChevronLeft, BarChart3, Plus, Edit3, Eye } from 'lucide-react';
+
+const WellbeingJournal = () => {
+  const [currentDay, setCurrentDay] = useState(1);
+  const [journalEntries, setJournalEntries] = useState({});
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [viewMode, setViewMode] = useState('entry'); // 'entry', 'view', 'analysis'
+
+  const moods = ['Joyeux', 'Énergique', 'Neutre', 'Fatigué', 'Irritable', 'Anxieux', 'Triste'];
+  const bodyReactions = ['Maux de tête', 'Tension musculaire', 'Fatigue oculaire', 'Insomnie', 'Problèmes digestifs', 'Douleurs dorsales'];
+  const mindReactions = ['Difficulté de concentration', 'Pensées répétitives', 'Irritabilité', 'Sentiment dépassé', 'Perte de motivation', 'Stress'];
+
+  const saveEntry = (day, entry) => {
+    setJournalEntries(prev => ({
+      ...prev,
+      [day]: { ...entry, date: new Date().toLocaleDateString() }
+    }));
+  };
+
+  const getCurrentEntry = () => {
+    return journalEntries[currentDay] || {
+      energy: 3,
+      mood: '',
+      difficultSituations: '',
+      bodyReaction: [],
+      mindReaction: [],
+      whatWouldHelp: '',
+      positiveAspects: ''
+    };
+  };
+
+  const JournalEntryForm = () => {
+    const [entry, setEntry] = useState(getCurrentEntry());
+
+    useEffect(() => {
+      setEntry(getCurrentEntry());
+    }, [currentDay]);
+
+    const handleSave = () => {
+      saveEntry(currentDay, entry);
+      alert('Entrée sauvegardée pour le jour ' + currentDay);
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-400">
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">Jour {currentDay} - Mon Journal</h3>
+          <p className="text-blue-600 text-sm">Prenez quelques minutes pour réfléchir à votre journée de travail.</p>
+        </div>
+
+        {/* Énergie */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Mon énergie du jour (1-5 étoiles)
+          </label>
+          <div className="flex space-x-2">
+            {[1, 2, 3, 4, 5].map(star => (
+              <button
+                key={star}
+                onClick={() => setEntry({...entry, energy: star})}
+                className={`text-2xl transition-colors ${
+                  star <= entry.energy ? 'text-yellow-400' : 'text-gray-300'
+                } hover:text-yellow-400`}
+              >
+                ⭐
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Humeur */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Mon humeur générale
+          </label>
+          <select
+            value={entry.mood}
+            onChange={(e) => setEntry({...entry, mood: e.target.value})}
+            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Sélectionnez votre humeur</option>
+            {moods.map(mood => (
+              <option key={mood} value={mood}>{mood}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Situations difficiles */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Situations difficiles aujourd'hui
+          </label>
+          <textarea
+            value={entry.difficultSituations}
+            onChange={(e) => setEntry({...entry, difficultSituations: e.target.value})}
+            placeholder="Décrivez les moments difficiles (réunion stressante, surcharge de travail, conflit...)"
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+          />
+        </div>
+
+        {/* Réactions corporelles */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Réactions de mon corps
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {bodyReactions.map(reaction => (
+              <label key={reaction} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={entry.bodyReaction.includes(reaction)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setEntry({...entry, bodyReaction: [...entry.bodyReaction, reaction]});
+                    } else {
+                      setEntry({...entry, bodyReaction: entry.bodyReaction.filter(r => r !== reaction)});
+                    }
+                  }}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{reaction}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Réactions mentales */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Réactions de mon esprit
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {mindReactions.map(reaction => (
+              <label key={reaction} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={entry.mindReaction.includes(reaction)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setEntry({...entry, mindReaction: [...entry.mindReaction, reaction]});
+                    } else {
+                      setEntry({...entry, mindReaction: entry.mindReaction.filter(r => r !== reaction)});
+                    }
+                  }}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{reaction}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Ce qui aurait aidé */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Qu'est-ce qui m'aurait aidé ?
+          </label>
+          <textarea
+            value={entry.whatWouldHelp}
+            onChange={(e) => setEntry({...entry, whatWouldHelp: e.target.value})}
+            placeholder="Une pause, du soutien, moins de pression, une clarification..."
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="2"
+          />
+        </div>
+
+        {/* Aspects positifs */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Qu'est-ce qui m'a fait du bien aujourd'hui ?
+          </label>
+          <textarea
+            value={entry.positiveAspects}
+            onChange={(e) => setEntry({...entry, positiveAspects: e.target.value})}
+            placeholder="Une réussite, une interaction positive, une pause efficace..."
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="2"
+          />
+        </div>
+
+        <button
+          onClick={handleSave}
+          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        >
+          Sauvegarder cette entrée
+        </button>
+      </div>
+    );
+  };
+
+  const JournalViewer = () => {
+    const entries = Object.entries(journalEntries).map(([day, entry]) => ({
+      day: parseInt(day),
+      ...entry
+    }));
+
+    if (entries.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <p className="text-gray-500">Aucune entrée enregistrée pour le moment.</p>
+          <p className="text-sm text-gray-400">Commencez par créer votre première entrée de journal.</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Mes entrées de journal</h3>
+        {entries.sort((a, b) => a.day - b.day).map(entry => (
+          <div key={entry.day} className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex justify-between items-start mb-3">
+              <h4 className="font-medium text-gray-800">Jour {entry.day}</h4>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-500">Énergie:</span>
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <span key={star} className={star <= entry.energy ? 'text-yellow-400' : 'text-gray-300'}>⭐</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {entry.mood && (
+              <p className="text-sm mb-2"><strong>Humeur:</strong> {entry.mood}</p>
+            )}
+            
+            {entry.difficultSituations && (
+              <p className="text-sm mb-2"><strong>Situations difficiles:</strong> {entry.difficultSituations}</p>
+            )}
+            
+            {entry.bodyReaction.length > 0 && (
+              <p className="text-sm mb-2"><strong>Réactions corporelles:</strong> {entry.bodyReaction.join(', ')}</p>
+            )}
+            
+            {entry.mindReaction.length > 0 && (
+              <p className="text-sm mb-2"><strong>Réactions mentales:</strong> {entry.mindReaction.join(', ')}</p>
+            )}
+            
+            {entry.positiveAspects && (
+              <p className="text-sm mb-2"><strong>Aspects positifs:</strong> {entry.positiveAspects}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const AnalysisView = () => {
+    const entries = Object.values(journalEntries);
+    
+    if (entries.length < 2) {
+      return (
+        <div className="text-center py-8">
+          <BarChart3 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <p className="text-gray-500">Au moins 2 entrées sont nécessaires pour l'analyse.</p>
+          <p className="text-sm text-gray-400">Continuez à remplir votre journal pour voir les tendances.</p>
+        </div>
+      );
+    }
+
+    const avgEnergy = entries.reduce((sum, entry) => sum + entry.energy, 0) / entries.length;
+    const commonBodyReactions = entries.flatMap(e => e.bodyReaction).reduce((acc, reaction) => {
+      acc[reaction] = (acc[reaction] || 0) + 1;
+      return acc;
+    }, {});
+    const commonMindReactions = entries.flatMap(e => e.mindReaction).reduce((acc, reaction) => {
+      acc[reaction] = (acc[reaction] || 0) + 1;
+      return acc;
+    }, {});
+
+    const mostCommonBodyReaction = Object.entries(commonBodyReactions).sort((a, b) => b[1] - a[1])[0];
+    const mostCommonMindReaction = Object.entries(commonMindReactions).sort((a, b) => b[1] - a[1])[0];
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-lg border-l-4 border-purple-400">
+          <h3 className="text-lg font-semibold text-purple-800 mb-2">Analyse de vos {entries.length} entrées</h3>
+          <p className="text-purple-600 text-sm">Découvrez les tendances de votre bien-être au travail.</p>
+        </div>
+
+        {/* Énergie moyenne */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <h4 className="font-medium text-gray-800 mb-3 flex items-center">
+            <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
+            Niveau d'énergie moyen
+          </h4>
+          <div className="flex items-center space-x-3">
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map(star => (
+                <span key={star} className={star <= Math.round(avgEnergy) ? 'text-yellow-400' : 'text-gray-300'}>⭐</span>
+              ))}
+            </div>
+            <span className="text-lg font-semibold text-gray-700">{avgEnergy.toFixed(1)}/5</span>
+          </div>
+          <p className="text-sm text-gray-600 mt-2">
+            {avgEnergy >= 4 ? 'Excellent niveau d\'énergie général !' :
+             avgEnergy >= 3 ? 'Niveau d\'énergie correct, mais perfectible.' :
+             'Attention : niveau d\'énergie préoccupant.'}
+          </p>
+        </div>
+
+        {/* Signaux d'alerte fréquents */}
+        {(mostCommonBodyReaction || mostCommonMindReaction) && (
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <h4 className="font-medium text-gray-800 mb-3 flex items-center">
+              <AlertTriangle className="h-5 w-5 mr-2 text-orange-600" />
+              Signaux d'alerte récurrents
+            </h4>
+            {mostCommonBodyReaction && (
+              <div className="mb-2">
+                <span className="font-medium text-orange-600">Réaction corporelle:</span>
+                <span className="ml-2">{mostCommonBodyReaction[0]} ({mostCommonBodyReaction[1]} fois)</span>
+              </div>
+            )}
+            {mostCommonMindReaction && (
+              <div>
+                <span className="font-medium text-orange-600">Réaction mentale:</span>
+                <span className="ml-2">{mostCommonMindReaction[0]} ({mostCommonMindReaction[1]} fois)</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Recommandations */}
+        <div className="bg-white p-4 rounded-lg border border-gray-200">
+          <h4 className="font-medium text-gray-800 mb-3 flex items-center">
+            <Lightbulb className="h-5 w-5 mr-2 text-green-600" />
+            Recommandations personnalisées
+          </h4>
+          <ul className="space-y-2 text-sm text-gray-700">
+            {avgEnergy < 3 && (
+              <li className="flex items-start">
+                <span className="text-red-500 mr-2">•</span>
+                Votre niveau d'énergie est préoccupant. Envisagez de consulter votre médecin traitant.
+              </li>
+            )}
+            {mostCommonBodyReaction && mostCommonBodyReaction[1] >= 2 && (
+              <li className="flex items-start">
+                <span className="text-orange-500 mr-2">•</span>
+                Symptôme récurrent : {mostCommonBodyReaction[0]}. Pensez à des pauses régulières et à l'ergonomie.
+              </li>
+            )}
+            {mostCommonMindReaction && mostCommonMindReaction[1] >= 2 && (
+              <li className="flex items-start">
+                <span className="text-orange-500 mr-2">•</span>
+                Réaction mentale fréquente : {mostCommonMindReaction[0]}. Considérez des techniques de gestion du stress.
+              </li>
+            )}
+            <li className="flex items-start">
+              <span className="text-green-500 mr-2">•</span>
+              Continuez ce journal pour identifier d'autres tendances sur le long terme.
+            </li>
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Journal de Bien-être au Travail</h1>
+          <p className="text-gray-600">Une activité interactive pour identifier les signaux négatifs et améliorer votre bien-être professionnel.</p>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-4">
+          <button
+            onClick={() => setViewMode('entry')}
+            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+              viewMode === 'entry' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Edit3 className="h-4 w-4 mr-2" />
+            Saisir une entrée
+          </button>
+          <button
+            onClick={() => setViewMode('view')}
+            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+              viewMode === 'view' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Voir mes entrées
+          </button>
+          <button
+            onClick={() => setViewMode('analysis')}
+            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+              viewMode === 'analysis' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Analyser
+          </button>
+        </div>
+
+        {/* Day Navigation pour le mode entry */}
+        {viewMode === 'entry' && (
+          <div className="flex items-center justify-between mb-6 bg-gray-50 p-4 rounded-lg">
+            <button
+              onClick={() => setCurrentDay(Math.max(1, currentDay - 1))}
+              disabled={currentDay === 1}
+              className="flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            
+            <div className="flex items-center space-x-4">
+              <Calendar className="h-5 w-5 text-gray-600" />
+              <span className="font-medium text-gray-800">Jour {currentDay}</span>
+              {journalEntries[currentDay] && (
+                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Complété</span>
+              )}
+            </div>
+            
+            <button
+              onClick={() => setCurrentDay(currentDay + 1)}
+              className="flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Content */}
+        <div>
+          {viewMode === 'entry' && <JournalEntryForm />}
+          {viewMode === 'view' && <JournalViewer />}
+          {viewMode === 'analysis' && <AnalysisView />}
+        </div>
+
+        {/* Footer Info */}
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+          <h4 className="font-medium text-blue-800 mb-2">💡 Conseils d'utilisation</h4>
+          <ul className="text-sm text-blue-700 space-y-1">
+            <li>• Prenez 5-10 minutes chaque soir pour remplir votre journal</li>
+            <li>• Soyez honnête et précis dans vos observations</li>
+            <li>• Après une semaine, analysez vos tendances pour identifier les déclencheurs</li>
+            <li>• N'hésitez pas à chercher de l'aide si les signaux d'alerte persistent</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default WellbeingJournal;
