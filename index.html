@@ -1,287 +1,804 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Journal de Bien-être au Travail</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal de Bien-être au Travail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
 
-  <!-- React & ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-  <!-- Babel (for JSX) -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #1e293b;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .intro {
+            background: linear-gradient(to right, #e0f2fe, #f0f9ff);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #0ea5e9;
+            margin-bottom: 30px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        .nav-tab {
+            background: #f1f5f9;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-tab.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .nav-tab:hover {
+            background: #e2e8f0;
+        }
+
+        .nav-tab.active:hover {
+            background: #2563eb;
+        }
+
+        .day-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .day-nav-btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .day-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .day-info {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .completed-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fefefe;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .form-section h3 {
+            color: #475569;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .energy-stars {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .star {
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.2s;
+            color: #cbd5e1;
+        }
+
+        .star.active {
+            color: #fbbf24;
+        }
+
+        .star:hover {
+            color: #fbbf24;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .save-btn {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+
+        .save-btn:hover {
+            background: #2563eb;
+        }
+
+        .entry-card {
+            background: #fefefe;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .entry-day {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .entry-energy {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .entry-field {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .entry-field strong {
+            color: #374151;
+        }
+
+        .analysis-section {
+            background: #fefefe;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .analysis-header {
+            background: linear-gradient(to right, #fdf4ff, #fef7ff);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #a855f7;
+            margin-bottom: 20px;
+        }
+
+        .analysis-header h3 {
+            color: #7c2d92;
+            margin-bottom: 5px;
+        }
+
+        .metric-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .alert-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+        }
+
+        .recommendation {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0fdf4;
+            border-radius: 6px;
+        }
+
+        .bullet {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .tips {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .tips h4 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .tips ul {
+            color: #1e40af;
+            font-size: 14px;
+        }
+
+        .tips li {
+            margin: 5px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-  <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
-    const { Calendar, TrendingUp, AlertTriangle, Lightbulb, ChevronRight, ChevronLeft, BarChart3, Edit3, Eye } = lucide;
-
-    function WellbeingJournal() {
-      const [currentDay, setCurrentDay] = useState(1);
-      const [journalEntries, setJournalEntries] = useState({});
-      const [viewMode, setViewMode] = useState('entry'); // 'entry', 'view', 'analysis'
-
-      const moods = ['Joyeux', 'Énergique', 'Neutre', 'Fatigué', 'Irritable', 'Anxieux', 'Triste'];
-      const bodyReactions = ['Maux de tête', 'Tension musculaire', 'Fatigue oculaire', 'Insomnie', 'Problèmes digestifs', 'Douleurs dorsales'];
-      const mindReactions = ['Difficulté de concentration', 'Pensées répétitives', 'Irritabilité', 'Sentiment dépassé', 'Perte de motivation', 'Stress'];
-
-      const saveEntry = (day, entry) => {
-        setJournalEntries(prev => ({
-          ...prev,
-          [day]: { ...entry, date: new Date().toLocaleDateString() }
-        }));
-      };
-
-      const getCurrentEntry = () => {
-        return journalEntries[currentDay] || {
-          energy: 3,
-          mood: '',
-          difficultSituations: '',
-          bodyReaction: [],
-          mindReaction: [],
-          whatWouldHelp: '',
-          positiveAspects: ''
-        };
-      };
-
-      function JournalEntryForm() {
-        const [entry, setEntry] = useState(getCurrentEntry());
-
-        useEffect(() => {
-          setEntry(getCurrentEntry());
-        }, [currentDay]);
-
-        const handleSave = () => {
-          saveEntry(currentDay, entry);
-          alert('Entrée sauvegardée pour le jour ' + currentDay);
-        };
-
-        return (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-400">
-              <h3 className="text-lg font-semibold text-blue-800 mb-2">Jour {currentDay} - Mon Journal</h3>
-              <p className="text-blue-600 text-sm">Prenez quelques minutes pour réfléchir à votre journée de travail.</p>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Header -->
+            <div class="header">
+                <h1>Journal de Bien-être au Travail</h1>
+                <div class="intro">
+                    <p><strong>Découvrez comment identifier et analyser les signaux de votre bien-être professionnel</strong> grâce à cette simulation interactive d'un journal de travail. Pendant les prochaines minutes, vous allez expérimenter la tenue d'un journal quotidien en remplissant plusieurs entrées fictives, puis analyser automatiquement vos observations pour repérer les tendances, les déclencheurs de stress et recevoir des recommandations personnalisées - une méthode éprouvée pour prendre du recul sur votre situation professionnelle et agir de manière préventive.</p>
+                </div>
             </div>
 
-            {/* Énergie */}
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Mon énergie du jour (1-5 étoiles)
-              </label>
-              <div className="flex space-x-2">
-                {[1, 2, 3, 4, 5].map(star => (
-                  <button
-                    key={star}
-                    onClick={() => setEntry({...entry, energy: star})}
-                    className={`text-2xl transition-colors ${star <= entry.energy ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400`}
-                  >
-                    ⭐
-                  </button>
-                ))}
-              </div>
+            <!-- Navigation -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('entry')">✏️ Saisir une entrée</button>
+                <button class="nav-tab" onclick="showTab('view')">👁️ Voir mes entrées</button>
+                <button class="nav-tab" onclick="showTab('analysis')">📊 Analyser</button>
             </div>
 
-            {/* Humeur */}
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Mon humeur générale</label>
-              <select
-                value={entry.mood}
-                onChange={(e) => setEntry({...entry, mood: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Sélectionnez votre humeur</option>
-                {moods.map(mood => <option key={mood} value={mood}>{mood}</option>)}
-              </select>
+            <!-- Day Navigation (only shown in entry mode) -->
+            <div id="day-navigation" class="day-navigation">
+                <button class="day-nav-btn" onclick="changeDay(-1)" id="prev-btn">← Précédent</button>
+                <div class="day-info">
+                    <span>📅</span>
+                    <span id="current-day-display">Jour 1</span>
+                    <span id="completed-indicator" class="completed-badge hidden">Complété</span>
+                </div>
+                <button class="day-nav-btn" onclick="changeDay(1)">Suivant →</button>
             </div>
 
-            {/* Situations difficiles */}
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Situations difficiles aujourd'hui</label>
-              <textarea
-                value={entry.difficultSituations}
-                onChange={(e) => setEntry({...entry, difficultSituations: e.target.value})}
-                placeholder="Décrivez les moments difficiles"
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="3"
-              />
+            <!-- Entry Form -->
+            <div id="entry-tab" class="tab-content">
+                <div class="form-section">
+                    <h3>⭐ Mon énergie du jour (1-5 étoiles)</h3>
+                    <div class="energy-stars" id="energy-stars">
+                        <span class="star" onclick="setEnergy(1)">⭐</span>
+                        <span class="star" onclick="setEnergy(2)">⭐</span>
+                        <span class="star" onclick="setEnergy(3)">⭐</span>
+                        <span class="star" onclick="setEnergy(4)">⭐</span>
+                        <span class="star" onclick="setEnergy(5)">⭐</span>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>😊 Mon humeur générale</h3>
+                    <select id="mood" class="form-control">
+                        <option value="">Sélectionnez votre humeur</option>
+                        <option value="Joyeux">Joyeux</option>
+                        <option value="Énergique">Énergique</option>
+                        <option value="Neutre">Neutre</option>
+                        <option value="Fatigué">Fatigué</option>
+                        <option value="Irritable">Irritable</option>
+                        <option value="Anxieux">Anxieux</option>
+                        <option value="Triste">Triste</option>
+                    </select>
+                </div>
+
+                <div class="form-section">
+                    <h3>⚠️ Situations difficiles aujourd'hui</h3>
+                    <textarea id="difficult-situations" class="form-control" rows="3" 
+                        placeholder="Décrivez les moments difficiles (réunion stressante, surcharge de travail, conflit...)"></textarea>
+                </div>
+
+                <div class="form-section">
+                    <h3>🩺 Réactions de mon corps</h3>
+                    <div class="checkbox-grid" id="body-reactions">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Maux de tête"> Maux de tête
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Tension musculaire"> Tension musculaire
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Fatigue oculaire"> Fatigue oculaire
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Insomnie"> Insomnie
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Problèmes digestifs"> Problèmes digestifs
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Douleurs dorsales"> Douleurs dorsales
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🧠 Réactions de mon esprit</h3>
+                    <div class="checkbox-grid" id="mind-reactions">
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Difficulté de concentration"> Difficulté de concentration
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Pensées répétitives"> Pensées répétitives
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Irritabilité"> Irritabilité
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Sentiment dépassé"> Sentiment dépassé
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Perte de motivation"> Perte de motivation
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" value="Stress"> Stress
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>🆘 Qu'est-ce qui m'aurait aidé ?</h3>
+                    <textarea id="what-would-help" class="form-control" rows="2" 
+                        placeholder="Une pause, du soutien, moins de pression, une clarification..."></textarea>
+                </div>
+
+                <div class="form-section">
+                    <h3>✨ Qu'est-ce qui m'a fait du bien aujourd'hui ?</h3>
+                    <textarea id="positive-aspects" class="form-control" rows="2" 
+                        placeholder="Une réussite, une interaction positive, une pause efficace..."></textarea>
+                </div>
+
+                <button class="save-btn" onclick="saveEntry()">💾 Sauvegarder cette entrée</button>
             </div>
 
-            {/* Réactions corporelles */}
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Réactions de mon corps</label>
-              <div className="grid grid-cols-2 gap-2">
-                {bodyReactions.map(reaction => (
-                  <label key={reaction} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={entry.bodyReaction.includes(reaction)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setEntry({...entry, bodyReaction: [...entry.bodyReaction, reaction]});
-                        } else {
-                          setEntry({...entry, bodyReaction: entry.bodyReaction.filter(r => r !== reaction)});
-                        }
-                      }}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{reaction}</span>
-                  </label>
-                ))}
-              </div>
+            <!-- View Entries -->
+            <div id="view-tab" class="tab-content hidden">
+                <div id="entries-list">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Aucune entrée enregistrée pour le moment.</p>
+                        <p style="font-size: 14px; color: #9ca3af;">Commencez par créer votre première entrée de journal.</p>
+                    </div>
+                </div>
             </div>
 
-            {/* Réactions mentales */}
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Réactions de mon esprit</label>
-              <div className="grid grid-cols-2 gap-2">
-                {mindReactions.map(reaction => (
-                  <label key={reaction} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={entry.mindReaction.includes(reaction)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setEntry({...entry, mindReaction: [...entry.mindReaction, reaction]});
-                        } else {
-                          setEntry({...entry, mindReaction: entry.mindReaction.filter(r => r !== reaction)});
-                        }
-                      }}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{reaction}</span>
-                  </label>
-                ))}
-              </div>
+            <!-- Analysis -->
+            <div id="analysis-tab" class="tab-content hidden">
+                <div id="analysis-content">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Au moins 2 entrées sont nécessaires pour l'analyse.</p>
+                        <p style="font-size: 14px; color: #9ca3af;">Continuez à remplir votre journal pour voir les tendances.</p>
+                    </div>
+                </div>
             </div>
 
-            {/* Ce qui aurait aidé */}
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Qu'est-ce qui m'aurait aidé ?</label>
-              <textarea
-                value={entry.whatWouldHelp}
-                onChange={(e) => setEntry({...entry, whatWouldHelp: e.target.value})}
-                placeholder="Une pause, du soutien, moins de pression..."
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="2"
-              />
+            <!-- Tips -->
+            <div class="tips">
+                <h4>💡 Conseils d'utilisation</h4>
+                <ul>
+                    <li>• Prenez 5-10 minutes chaque soir pour remplir votre journal</li>
+                    <li>• Soyez honnête et précis dans vos observations</li>
+                    <li>• Après une semaine, analysez vos tendances pour identifier les déclencheurs</li>
+                    <li>• N'hésitez pas à chercher de l'aide si les signaux d'alerte persistent</li>
+                </ul>
             </div>
-
-            {/* Aspects positifs */}
-            <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Qu'est-ce qui m'a fait du bien aujourd'hui ?</label>
-              <textarea
-                value={entry.positiveAspects}
-                onChange={(e) => setEntry({...entry, positiveAspects: e.target.value})}
-                placeholder="Une réussite, une interaction positive..."
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows="2"
-              />
-            </div>
-
-            <button onClick={handleSave}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-              Sauvegarder cette entrée
-            </button>
-          </div>
-        );
-      }
-
-      function JournalViewer() {
-        const entries = Object.entries(journalEntries).map(([day, entry]) => ({day: parseInt(day), ...entry}));
-
-        if (entries.length === 0) {
-          return (
-            <div className="text-center py-8">
-              <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-gray-500">Aucune entrée enregistrée.</p>
-            </div>
-          );
-        }
-
-        return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Mes entrées de journal</h3>
-            {entries.sort((a,b)=>a.day-b.day).map(entry => (
-              <div key={entry.day} className="bg-white p-4 rounded-lg border border-gray-200">
-                <h4 className="font-medium text-gray-800">Jour {entry.day}</h4>
-                <p className="text-sm">Énergie: {'⭐'.repeat(entry.energy)}</p>
-                {entry.mood && <p className="text-sm"><strong>Humeur:</strong> {entry.mood}</p>}
-                {entry.difficultSituations && <p className="text-sm"><strong>Situations difficiles:</strong> {entry.difficultSituations}</p>}
-              </div>
-            ))}
-          </div>
-        );
-      }
-
-      function AnalysisView() {
-        const entries = Object.values(journalEntries);
-        if (entries.length < 2) {
-          return <p className="text-gray-500">Ajoutez au moins 2 entrées pour voir l'analyse.</p>;
-        }
-
-        const avgEnergy = entries.reduce((sum, e) => sum + e.energy, 0) / entries.length;
-
-        return (
-          <div className="bg-white p-4 rounded-lg border border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Analyse</h3>
-            <p className="text-gray-700">Niveau d'énergie moyen: {avgEnergy.toFixed(1)} / 5</p>
-          </div>
-        );
-      }
-
-      return (
-        <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">Journal de Bien-être au Travail</h1>
-
-            <div className="flex flex-wrap gap-2 mb-6 border-b border-gray-200 pb-4">
-              <button onClick={() => setViewMode('entry')}
-                className={`flex items-center px-4 py-2 rounded-lg ${viewMode==='entry'?'bg-blue-600 text-white':'bg-gray-100'}`}>
-                <Edit3 className="h-4 w-4 mr-2" /> Saisir une entrée
-              </button>
-              <button onClick={() => setViewMode('view')}
-                className={`flex items-center px-4 py-2 rounded-lg ${viewMode==='view'?'bg-blue-600 text-white':'bg-gray-100'}`}>
-                <Eye className="h-4 w-4 mr-2" /> Voir mes entrées
-              </button>
-              <button onClick={() => setViewMode('analysis')}
-                className={`flex items-center px-4 py-2 rounded-lg ${viewMode==='analysis'?'bg-blue-600 text-white':'bg-gray-100'}`}>
-                <BarChart3 className="h-4 w-4 mr-2" /> Analyser
-              </button>
-            </div>
-
-            {viewMode === 'entry' && (
-              <div className="flex items-center justify-between mb-6 bg-gray-50 p-4 rounded-lg">
-                <button onClick={() => setCurrentDay(Math.max(1,currentDay-1))}
-                  disabled={currentDay===1}
-                  className="flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md disabled:opacity-50">
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <span className="font-medium text-gray-800">Jour {currentDay}</span>
-                <button onClick={() => setCurrentDay(currentDay+1)}
-                  className="flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md">
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            )}
-
-            {viewMode === 'entry' && <JournalEntryForm />}
-            {viewMode === 'view' && <JournalViewer />}
-            {viewMode === 'analysis' && <AnalysisView />}
-          </div>
         </div>
-      );
-    }
+    </div>
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<WellbeingJournal />);
-  </script>
-</body>
-</html>
+    <script>
+        // Global variables
+        let currentDay = 1;
+        let journalEntries = {};
+        let currentTab = 'entry';
+
+        // Initialize the application
+        function init() {
+            setEnergy(3); // Default energy level
+            updateDayNavigation();
+            loadCurrentEntry();
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            // Show/hide day navigation
+            if (tabName === 'entry') {
+                document.getElementById('day-navigation').style.display = 'flex';
+            } else {
+                document.getElementById('day-navigation').style.display = 'none';
+            }
+            
+            currentTab = tabName;
+            
+            // Update content based on tab
+            if (tabName === 'view') {
+                displayEntries();
+            } else if (tabName === 'analysis') {
+                displayAnalysis();
+            }
+        }
+
+        // Day navigation
+        function changeDay(direction) {
+            if (direction === -1 && currentDay > 1) {
+                currentDay--;
+            } else if (direction === 1) {
+                currentDay++;
+            }
+            
+            updateDayNavigation();
+            loadCurrentEntry();
+        }
+
+        function updateDayNavigation() {
+            document.getElementById('current-day-display').textContent = `Jour ${currentDay}`;
+            document.getElementById('prev-btn').disabled = currentDay === 1;
+            
+            // Show completed indicator if entry exists
+            if (journalEntries[currentDay]) {
+                document.getElementById('completed-indicator').classList.remove('hidden');
+            } else {
+                document.getElementById('completed-indicator').classList.add('hidden');
+            }
+        }
+
+        // Energy rating
+        function setEnergy(level) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < level) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            
+            // Store energy level
+            currentEntry = getCurrentEntry();
+            currentEntry.energy = level;
+        }
+
+        // Get current entry data
+        function getCurrentEntry() {
+            return journalEntries[currentDay] || {
+                energy: 3,
+                mood: '',
+                difficultSituations: '',
+                bodyReactions: [],
+                mindReactions: [],
+                whatWouldHelp: '',
+                positiveAspects: ''
+            };
+        }
+
+        // Load current entry into form
+        function loadCurrentEntry() {
+            const entry = getCurrentEntry();
+            
+            // Set energy
+            setEnergy(entry.energy);
+            
+            // Set form values
+            document.getElementById('mood').value = entry.mood;
+            document.getElementById('difficult-situations').value = entry.difficultSituations;
+            document.getElementById('what-would-help').value = entry.whatWouldHelp;
+            document.getElementById('positive-aspects').value = entry.positiveAspects;
+            
+            // Set checkboxes
+            document.querySelectorAll('#body-reactions input').forEach(checkbox => {
+                checkbox.checked = entry.bodyReactions.includes(checkbox.value);
+            });
+            
+            document.querySelectorAll('#mind-reactions input').forEach(checkbox => {
+                checkbox.checked = entry.mindReactions.includes(checkbox.value);
+            });
+        }
+
+        // Save entry
+        function saveEntry() {
+            const entry = {
+                energy: document.querySelectorAll('.star.active').length,
+                mood: document.getElementById('mood').value,
+                difficultSituations: document.getElementById('difficult-situations').value,
+                bodyReactions: Array.from(document.querySelectorAll('#body-reactions input:checked')).map(cb => cb.value),
+                mindReactions: Array.from(document.querySelectorAll('#mind-reactions input:checked')).map(cb => cb.value),
+                whatWouldHelp: document.getElementById('what-would-help').value,
+                positiveAspects: document.getElementById('positive-aspects').value,
+                date: new Date().toLocaleDateString()
+            };
+            
+            journalEntries[currentDay] = entry;
+            updateDayNavigation();
+            
+            alert(`Entrée sauvegardée pour le jour ${currentDay} !`);
+        }
+
+        // Display entries
+        function displayEntries() {
+            const entriesList = document.getElementById('entries-list');
+            const entries = Object.entries(journalEntries);
+            
+            if (entries.length === 0) {
+                entriesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Aucune entrée enregistrée pour le moment.</p>
+                        <p style="font-size: 14px; color: #9ca3af;">Commencez par créer votre première entrée de journal.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            entriesList.innerHTML = '<h3 style="margin-bottom: 20px; color: #374151;">Mes entrées de journal</h3>';
+            
+            entries.sort((a, b) => parseInt(a[0]) - parseInt(b[0])).forEach(([day, entry]) => {
+                const stars = '⭐'.repeat(entry.energy) + '☆'.repeat(5 - entry.energy);
+                
+                entriesList.innerHTML += `
+                    <div class="entry-card">
+                        <div class="entry-header">
+                            <div class="entry-day">Jour ${day}</div>
+                            <div class="entry-energy">
+                                <span style="font-size: 14px; color: #6b7280;">Énergie:</span>
+                                <span>${stars}</span>
+                            </div>
+                        </div>
+                        
+                        ${entry.mood ? `<div class="entry-field"><strong>Humeur:</strong> ${entry.mood}</div>` : ''}
+                        ${entry.difficultSituations ? `<div class="entry-field"><strong>Situations difficiles:</strong> ${entry.difficultSituations}</div>` : ''}
+                        ${entry.bodyReactions.length > 0 ? `<div class="entry-field"><strong>Réactions corporelles:</strong> ${entry.bodyReactions.join(', ')}</div>` : ''}
+                        ${entry.mindReactions.length > 0 ? `<div class="entry-field"><strong>Réactions mentales:</strong> ${entry.mindReactions.join(', ')}</div>` : ''}
+                        ${entry.whatWouldHelp ? `<div class="entry-field"><strong>Ce qui aurait aidé:</strong> ${entry.whatWouldHelp}</div>` : ''}
+                        ${entry.positiveAspects ? `<div class="entry-field"><strong>Aspects positifs:</strong> ${entry.positiveAspects}</div>` : ''}
+                    </div>
+                `;
+            });
+        }
+
+        // Display analysis
+        function displayAnalysis() {
+            const analysisContent = document.getElementById('analysis-content');
+            const entries = Object.values(journalEntries);
+            
+            if (entries.length < 2) {
+                analysisContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Au moins 2 entrées sont nécessaires pour l'analyse.</p>
+                        <p style="font-size: 14px; color: #9ca3af;">Continuez à remplir votre journal pour voir les tendances.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate statistics
+            const avgEnergy = entries.reduce((sum, entry) => sum + entry.energy, 0) / entries.length;
+            
+            // Count reactions
+            const bodyReactionCounts = {};
+            const mindReactionCounts = {};
+            
+            entries.forEach(entry => {
+                entry.bodyReactions.forEach(reaction => {
+                    bodyReactionCounts[reaction] = (bodyReactionCounts[reaction] || 0) + 1;
+                });
+                entry.mindReactions.forEach(reaction => {
+                    mindReactionCounts[reaction] = (mindReactionCounts[reaction] || 0) + 1;
+                });
+            });
+            
+            const mostCommonBodyReaction = Object.entries(bodyReactionCounts).sort((a, b) => b[1] - a[1])[0];
+            const mostCommonMindReaction = Object.entries(mindReactionCounts).sort((a, b) => b[1] - a[1])[0];
+            
+            // Generate analysis HTML
+            let analysisHTML = `
+                <div class="analysis-header">
+                    <h3>Analyse de vos ${entries.length} entrées</h3>
+                    <p style="color: #7c2d92; font-size: 14px;">Découvrez les tendances de votre bien-être au travail.</p>
+                </div>
+                
+                <div class="analysis-section">
+                    <h4 style="color: #374151; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        📈 Niveau d'énergie moyen
+                    </h4>
+                    <div class="metric-box">
+                        <div>${'⭐'.repeat(Math.round(avgEnergy))}${'☆'.repeat(5 - Math.round(avgEnergy))}</div>
+                        <div class="metric-value">${avgEnergy.toFixed(1)}/5</div>
+                    </div>
+                    <p style="font-size: 14px; color: #6b7280;">
+                        ${avgEnergy >= 4 ? 'Excellent niveau d\'énergie général !' :
+                          avgEnergy >= 3 ? 'Niveau d\'énergie correct, mais perfectible.' :
+                          'Attention : niveau d\'énergie préoccupant.'}
+                    </p>
+                </div>
+            `;
+            
+            if (mostCommonBodyReaction || mostCommonMindReaction) {
+                analysisHTML += `
+                    <div class="analysis-section">
+                        <h4 style="color: #374151; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            ⚠️ Signaux d'alerte récurrents
+                        </h4>
+                `;
+                
+                if (mostCommonBodyReaction) {
+                    analysisHTML += `
+                        <div class="alert-item">
+                            <strong>Réaction corporelle:</strong> ${mostCommonBodyReaction[0]} (${mostCommonBodyReaction[1]} fois)
+                        </div>
+                    `;
+                }
+                
+                if (mostCommonMindReaction) {
+                    analysisHTML += `
+                        <div class="alert-item">
+                            <strong>Réaction mentale:</strong> ${mostCommonMindReaction[0]} (${mostCommonMindReaction[1]} fois)
+                        </div>
+                    `;
+                }
+                
+                analysisHTML += '</div>';
+            }
+            
+            // Recommendations
+            analysisHTML += `
+                <div class="analysis-section">
+                    <h4 style="color: #374151; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        💡 Recommandations personnalisées
+                    </h4>
+            `;
+            
+            if (avgEnergy < 3) {
+                analysisHTML += `
+                    <div class="recommendation">
+                        <span class="bullet" style="color: #dc2626;">•</span>
+                        <span>Votre niveau d'énergie est préoccupant. Envisagez de consulter votre médecin traitant.</span>
+                    </div>
+                `;
+            }
+            
+            if (mostCommonBodyReaction && mostCommonBodyReaction[1] >= 2) {
+                analysisHTML += `
+                    <div class="recommendation">
+                        <span class="bullet" style="color: #f59e0b;">•</span>
+                        <span>Symptôme récurrent : ${mostCommonBodyReaction[0]}. Pensez à des pauses régulières et à l'ergonomie.</span>
+                    </div>
+                `;
+            }
+            
+            if (mostCommonMindReaction && mostCommonMindReaction[1] >= 2) {
+                analysisHTML += `
+                    <div class="recommendation">
+                        <span class="bullet" style="color: #f59e0b;">•</span>
+                        <span>Réaction mentale fréquente : ${mostCommonMindReaction[0]}. Considérez des techniques de gestion du stress.</span>
+                    </div>
+                `;
+            }
+            
+            analysisHTML += `
+                <div class="recommendation">
+                    <span class="bullet">•</span>
+                    <span>Continuez ce
